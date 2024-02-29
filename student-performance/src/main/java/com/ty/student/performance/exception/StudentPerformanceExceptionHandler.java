@@ -22,4 +22,15 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 		
 		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(UserNotAuthorizedException.class)
+	public ResponseEntity<ResponseStructure<String>> handleUserNotAuthorizedException(UserNotAuthorizedException exception){
+		ResponseStructure<String> structure=new ResponseStructure<String>();
+		
+		structure.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		structure.setMessage(""+exception.getMessage());
+		structure.setData("Not found");
+		
+		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
+	}
 }

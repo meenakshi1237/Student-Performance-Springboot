@@ -1,6 +1,6 @@
 package com.ty.student.performance.exception;
 
-public class UserNotAuthorized extends RuntimeException{
+public class UserNotAuthorizedException extends RuntimeException{
 	@Override
 	public String getMessage() {
 		return "User not authorized";
