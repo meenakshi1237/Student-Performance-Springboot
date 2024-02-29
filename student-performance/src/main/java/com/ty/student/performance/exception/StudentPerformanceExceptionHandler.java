@@ -33,4 +33,15 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 		
 		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(VotingListEmptyException.class)
+	public ResponseEntity<ResponseStructure<String>> handleVotingListEmptyException(VotingListEmptyException exception){
+		ResponseStructure<String> structure=new ResponseStructure<String>();
+		
+		structure.setStatusCode(HttpStatus.NO_CONTENT.value());
+		structure.setMessage(exception.getMessage());
+		structure.setData("No Content");
+		
+		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.NO_CONTENT);
+	}
 }
