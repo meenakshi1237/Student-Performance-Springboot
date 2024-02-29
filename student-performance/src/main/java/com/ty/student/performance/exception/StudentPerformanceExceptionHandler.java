@@ -18,7 +18,7 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 	public ResponseEntity<ResponseStructure<String>> handleUserNotFoundException(UserNotFoundException exception){
 		ResponseStructure<String> structure=new ResponseStructure<String>();
 		
-		structure.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		structure.setStatusCode(HttpStatus.NOT_FOUND.value());
 		structure.setMessage(""+exception.getMessage());
 		structure.setData("Not found");
 		
@@ -29,7 +29,7 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 	public ResponseEntity<ResponseStructure<String>> handleUserNotAuthorizedException(UserNotAuthorizedException exception){
 		ResponseStructure<String> structure=new ResponseStructure<String>();
 		
-		structure.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		structure.setStatusCode(HttpStatus.UNAUTHORIZED.value());
 		structure.setMessage(""+exception.getMessage());
 		structure.setData("Not found");
 		
@@ -53,7 +53,18 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 		
 		structure.setStatusCode(HttpStatus.BAD_REQUEST.value());
 		structure.setMessage(""+exception.getMessage());
-		structure.setData("User Already Exist");
+		structure.setData("Not Found");
+		
+		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(TrainerDeletionException.class)
+	public ResponseEntity<ResponseStructure<String>> handlerTrainerCannotBeDeleted(TrainerDeletionException exception){
+ResponseStructure<String> structure=new ResponseStructure<String>();
+		
+		structure.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		structure.setMessage(""+exception.getMessage());
+		structure.setData("Not Found");
 		
 		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
 
