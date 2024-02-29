@@ -37,6 +37,8 @@ public class PresentationService {
 			if (opt.get().getUserRole().equals(UserRole.valueOf("STUDENT"))) {
 				presentation.setUser(opt.get());
 
+				presentation.setTrainerId(0);
+				presentation.setTrainerMark(0.0);
 				Presentation newPresentation = presentationDao.savePresentation(presentation);
 
 				ResponseStructure<Presentation> responseStructure = new ResponseStructure<Presentation>();
@@ -85,7 +87,7 @@ public class PresentationService {
 
 		if (optUser.isPresent()) {
 			if (optUser.get().getUserRole().equals(UserRole.valueOf("STUDENT"))) {
-				List<Presentation> presentationLists = presentationDao.getPresentationBytsudentId(optUser.get());
+				List<Presentation> presentationLists = presentationDao.getPresentationByStudentId(optUser.get());
 
 				ResponseStructure<List<Presentation>> responseStructure = new ResponseStructure<List<Presentation>>();
 				responseStructure.setStatusCode(HttpStatus.OK.value());

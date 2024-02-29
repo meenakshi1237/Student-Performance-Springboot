@@ -8,15 +8,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.ty.student.performance.dao.PresentationDao;
 import com.ty.student.performance.dao.VotingDao;
-import com.ty.student.performance.dto.ResponseStructure;import com.ty.student.performance.entity.Presentation;
+import com.ty.student.performance.dto.ResponseStructure;
+import com.ty.student.performance.entity.Presentation;
 import com.ty.student.performance.entity.User;
 import com.ty.student.performance.entity.Voting;
 import com.ty.student.performance.exception.UserNotAuthorizedException;
 import com.ty.student.performance.exception.UserNotFoundException;
+import com.ty.student.performance.exception.VotingAlreadyExistException;
 import com.ty.student.performance.exception.VotingListEmptyException;
 import com.ty.student.performance.exception.VotingNotFoundException;
-import com.ty.student.performance.repository.PresentationRepository;
 import com.ty.student.performance.repository.UserRepository;
 import com.ty.student.performance.util.UserRole;
 
@@ -27,27 +29,40 @@ public class VotingService {
 	private VotingDao votingDao;
 	
 	@Autowired
-	private PresentationRepository presentationRepository;
+	private UserRepository userRepository;
 	
 	@Autowired
-	private UserRepository userRepository;
+	private PresentationDao presentationDao;
 	
 	public ResponseEntity<ResponseStructure<Voting>> saveVoting(int userId ,int presentationId, Voting voting) {
 		
-		Optional<Presentation> optional = this.presentationRepository.findById(presentationId);
-		Optional<User> optional2 = this.userRepository.findById(userId);
+		Presentation presentation = this.presentationDao.getPresetationById(presentationId);
+		Optional<User> optional = this.userRepository.findById(userId);
 		
-		if(optional.isPresent() && optional2.isPresent()) {
-			Presentation presentation = optional.get();
-			User user = optional2.get();
+		if(presentation != null && optional.isPresent()) {
+			User user = optional.get();
 			if(user.getUserRole().equals(UserRole.STUDENT) && userId != presentation.getUser().getUserId()) {
-				this.votingDao.saveVoting(presentationId, voting);
-				ResponseStructure<Voting> responseStructure = new ResponseStructure<Voting>();
-				responseStructure.setStatusCode(HttpStatus.CREATED.value());
-				responseStructure.setMessage("Success");
-				responseStructure.setData(voting);
-				
-				return new ResponseEntity<ResponseStructure<Voting>>(responseStructure, HttpStatus.CREATED);
+				List<Voting> votings = this.votingDao.getAllVotingByPresentationId(presentationId);
+				boolean isPresent = false;
+				for (Voting voting2 : votings) {
+					if(userId == voting2.getUser().getUserId()) {
+						isPresent = true;
+						break;
+					}
+				}
+				if(!isPresent) {
+					voting.setUser(user);
+					voting.setPresentation(presentation);
+					this.votingDao.saveVoting(voting);
+					ResponseStructure<Voting> responseStructure = new ResponseStructure<Voting>();
+					responseStructure.setStatusCode(HttpStatus.CREATED.value());
+					responseStructure.setMessage("Success");
+					responseStructure.setData(voting);
+					
+					return new ResponseEntity<ResponseStructure<Voting>>(responseStructure, HttpStatus.CREATED);
+				} else {
+					throw new VotingAlreadyExistException();
+				}
 			} else {
 				throw new UserNotAuthorizedException();
 			}
@@ -72,7 +87,7 @@ public class VotingService {
 	}
 	
 	public ResponseEntity<ResponseStructure<List<Voting>>> getAllVotingByPresentationId(int presentationId) {
-		List<Voting> votings = this.votingDao.getAllVotingByPresentatiinId(presentationId);
+		List<Voting> votings = this.votingDao.getAllVotingByPresentationId(presentationId);
 		if(!votings.isEmpty()) {
 			ResponseStructure<List<Voting>> responseStructure = new ResponseStructure<List<Voting>>();
 			responseStructure.setStatusCode(HttpStatus.OK.value());

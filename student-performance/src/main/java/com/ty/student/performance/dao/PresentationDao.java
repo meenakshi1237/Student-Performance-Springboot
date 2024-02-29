@@ -1,6 +1,7 @@
 package com.ty.student.performance.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,12 +23,21 @@ public class PresentationDao {
 		return presentationRepository.save(presentation);
 	}
 
-	public List<Presentation> getPresentationBytsudentId(User user) {
+	public List<Presentation> getPresentationByStudentId(User user) {
 		return user.getPresentations();
 	}
 
 	public List<Presentation> getAllPresentation() {
 		return presentationRepository.findAll();
+	}
+	
+	public Presentation getPresetationById(int presentationId) {
+		Optional<Presentation> optional = this.presentationRepository.findById(presentationId);
+		if(optional.isPresent()) {
+			return optional.get();
+		} else {
+			return null;
+		}
 	}
 
 }

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import com.ty.student.performance.entity.Presentation;
 import com.ty.student.performance.entity.Voting;
-import com.ty.student.performance.repository.PresentationRepository;
 import com.ty.student.performance.repository.VotingRepository;
 
 @Repository
@@ -18,17 +17,15 @@ public class VotingDao {
 	private VotingRepository votingRepository;
 	
 	@Autowired
-	private PresentationRepository presentationRepository;
+	private PresentationDao presentationDao;
 	
-	public Voting saveVoting(int presentationId, Voting voting) {
-		Optional<Presentation> optional = this.presentationRepository.findById(presentationId);
-		Presentation presentation = optional.get();
-		voting.setPresentation(presentation);
-		
+	// saving voting
+	public Voting saveVoting(Voting voting) {
 		return this.votingRepository.save(voting);
-		
+
 	}
 	
+	// finding voting by voting id
 	public Voting getVotingById(int votingId) {
 		Optional<Voting> optional = this.votingRepository.findById(votingId);
 		if(optional.isPresent()) {
@@ -38,7 +35,8 @@ public class VotingDao {
 		}
 	}
 	
-	public List<Voting> getAllVotingByPresentatiinId(int presentationId) {
+	// finding all voting of a particular presentation by presentation id
+	public List<Voting> getAllVotingByPresentationId(int presentationId) {
 		return this.votingRepository.findByPresentationPresentationId(presentationId);
 	}
 	

@@ -16,23 +16,23 @@ import com.ty.student.performance.entity.Voting;
 import com.ty.student.performance.service.VotingService;
 
 @RestController
-@RequestMapping("users/")
+@RequestMapping("users/votings/")
 public class VotingController {
 
 	@Autowired
 	private VotingService votingService;
 	
-	@PostMapping("students/{studentId}/presentations/{presentationId}/votings")
+	@PostMapping("students/{studentId}/presentations/{presentationId}")
 	public ResponseEntity<ResponseStructure<Voting>> saveVoting(@PathVariable int studentId, @PathVariable int presentationId, @RequestBody Voting voting) {
 		return this.votingService.saveVoting(studentId, presentationId, voting);
 	}
 	
-	@GetMapping("votings/{votinId}")
+	@GetMapping("{votingId}")
 	public ResponseEntity<ResponseStructure<Voting>> getVotingById(@PathVariable int votingId) {
 		return this.votingService.getVotingById(votingId);
 	}
 	
-	@GetMapping("votings/presentations/{presentationId}")
+	@GetMapping("presentations/{presentationId}")
 	public ResponseEntity<ResponseStructure<List<Voting>>> getAllVotingByPresentationId(@PathVariable int presentationId) {
 		return this.votingService.getAllVotingByPresentationId(presentationId);
 	}
