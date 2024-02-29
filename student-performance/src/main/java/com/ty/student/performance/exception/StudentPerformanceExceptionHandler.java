@@ -60,7 +60,7 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 	
 	@ExceptionHandler(TrainerDeletionException.class)
 	public ResponseEntity<ResponseStructure<String>> handlerTrainerCannotBeDeleted(TrainerDeletionException exception){
-ResponseStructure<String> structure=new ResponseStructure<String>();
+		ResponseStructure<String> structure=new ResponseStructure<String>();
 		
 		structure.setStatusCode(HttpStatus.BAD_REQUEST.value());
 		structure.setMessage(""+exception.getMessage());

@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.ty.student.performance.entity.Presentation;
 import com.ty.student.performance.entity.Voting;
 import com.ty.student.performance.repository.VotingRepository;
 
@@ -15,9 +14,6 @@ public class VotingDao {
 
 	@Autowired
 	private VotingRepository votingRepository;
-	
-	@Autowired
-	private PresentationDao presentationDao;
 	
 	// saving voting
 	public Voting saveVoting(Voting voting) {

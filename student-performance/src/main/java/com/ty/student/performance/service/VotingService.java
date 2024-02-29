@@ -1,7 +1,6 @@
 package com.ty.student.performance.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.ty.student.performance.dao.PresentationDao;
+import com.ty.student.performance.dao.UserDao;
 import com.ty.student.performance.dao.VotingDao;
 import com.ty.student.performance.dto.ResponseStructure;
 import com.ty.student.performance.entity.Presentation;
@@ -19,7 +19,6 @@ import com.ty.student.performance.exception.UserNotFoundException;
 import com.ty.student.performance.exception.VotingAlreadyExistException;
 import com.ty.student.performance.exception.VotingListEmptyException;
 import com.ty.student.performance.exception.VotingNotFoundException;
-import com.ty.student.performance.repository.UserRepository;
 import com.ty.student.performance.util.UserRole;
 
 @Service
@@ -29,18 +28,17 @@ public class VotingService {
 	private VotingDao votingDao;
 	
 	@Autowired
-	private UserRepository userRepository;
+	private PresentationDao presentationDao;
 	
 	@Autowired
-	private PresentationDao presentationDao;
+	private UserDao userDao;
 	
 	public ResponseEntity<ResponseStructure<Voting>> saveVoting(int userId ,int presentationId, Voting voting) {
 		
 		Presentation presentation = this.presentationDao.getPresetationById(presentationId);
-		Optional<User> optional = this.userRepository.findById(userId);
+		User user = this.userDao.findUserById(userId);
 		
-		if(presentation != null && optional.isPresent()) {
-			User user = optional.get();
+		if(presentation != null && user != null) {
 			if(user.getUserRole().equals(UserRole.STUDENT) && userId != presentation.getUser().getUserId()) {
 				List<Voting> votings = this.votingDao.getAllVotingByPresentationId(presentationId);
 				boolean isPresent = false;
