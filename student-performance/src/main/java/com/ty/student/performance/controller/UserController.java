@@ -3,7 +3,11 @@ package com.ty.student.performance.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,5 +31,20 @@ public class UserController {
 	@PostMapping("/student")
 	public ResponseEntity<ResponseStructure<User>> saveStudent(@RequestBody User user){
 		return userService.saveStudent(user);
+	}
+	
+	@PutMapping("/user/{userId}/{trainerId}")
+	public ResponseEntity<ResponseStructure<User>> updateUser(@RequestBody User user,@PathVariable int trainerId,@PathVariable int userId){
+		return userService.updateUser(user, userId, trainerId);
+	}
+	
+	@GetMapping("/user/{userId}")
+	public ResponseEntity<ResponseStructure<User>> findUserById(@PathVariable int userId){
+		return userService.findUserById(userId);
+	}
+	
+	@DeleteMapping("/student/{studentId}/{trainerId}")
+	public ResponseEntity<ResponseStructure<String>> deleteStudent(@PathVariable int studentId,@PathVariable int trainerId){
+		return userService.deleteStudent(studentId, trainerId);
 	}
 }

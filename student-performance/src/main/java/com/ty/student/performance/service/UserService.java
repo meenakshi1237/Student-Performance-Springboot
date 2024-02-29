@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import com.ty.student.performance.dao.UserDao;
 import com.ty.student.performance.dto.ResponseStructure;
 import com.ty.student.performance.entity.User;
+import com.ty.student.performance.exception.TrainerDeletionException;
+import com.ty.student.performance.exception.UserNotAuthorizedException;
+import com.ty.student.performance.exception.UserNotFoundException;
 import com.ty.student.performance.util.UserRole;
 
 @Service
@@ -36,5 +39,89 @@ public class UserService {
 		responseStructure.setStatusCode(HttpStatus.OK.value());
 		
 		return new ResponseEntity<ResponseStructure<User>>(responseStructure,HttpStatus.OK);
+	}
+	
+	public ResponseEntity<ResponseStructure<User>> findUserById(int userId){
+		User user=userDao.findUserById(userId);
+		if(user!=null) {
+			ResponseStructure<User> responseStructure=new ResponseStructure<User>();
+			responseStructure.setData(user);
+			responseStructure.setMessage("Sucess");
+			responseStructure.setStatusCode(HttpStatus.OK.value());
+			
+			return new ResponseEntity<ResponseStructure<User>>(responseStructure,HttpStatus.OK);
+		}
+		else {
+			throw new UserNotFoundException();
+		}
+	}
+	
+	public ResponseEntity<ResponseStructure<User>> updateUser(User user,int userId,int trainerId){
+		User foundUser=userDao.findUserById(userId);
+		User trainer=userDao.findUserById(trainerId);
+		if(foundUser!=null) {
+			if(trainer.getUserRole().equals(UserRole.valueOf("TRAINER"))) {
+				if(user.getUserName()!=null) {
+					foundUser.setUserName(user.getUserName());
+				}
+				if(user.getEmail()!=null) {
+					foundUser.setEmail(user.getEmail());
+				}
+				if(user.getPassword()!=null) {
+					foundUser.setPassword(user.getPassword());
+				}
+				
+				User updatedUser=userDao.saveUser(foundUser);
+				ResponseStructure<User> responseStructure=new ResponseStructure<User>();
+				responseStructure.setData(updatedUser);
+				responseStructure.setMessage("Sucess");
+				responseStructure.setStatusCode(HttpStatus.OK.value());
+				
+				return new ResponseEntity<ResponseStructure<User>>(responseStructure,HttpStatus.OK);
+			}
+			else {
+				throw new UserNotAuthorizedException();
+			}
+		}
+		else {
+			throw new UserNotFoundException();
+		}
+	}
+	
+	public ResponseEntity<ResponseStructure<String>> deleteStudent(int studentId,int trainerId){
+		User trainer=userDao.findUserById(trainerId);
+		User student=userDao.findUserById(studentId);
+		if(trainer!=null && student!=null) {
+			if(trainer.getUserRole().equals(UserRole.valueOf("TRAINER"))) {
+				if(student.getUserRole().equals(UserRole.valueOf("STUDENT"))) {
+					boolean result=	userDao.deleteStudent(student);
+					if(result=true) {
+						ResponseStructure<String> responseStructure=new ResponseStructure<String>();
+						responseStructure.setData("Student Deleted");
+						responseStructure.setMessage("Sucess");
+						responseStructure.setStatusCode(HttpStatus.OK.value());
+						
+						return new ResponseEntity<ResponseStructure<String>>(responseStructure,HttpStatus.OK);
+					}
+					else {
+						ResponseStructure<String> responseStructure=new ResponseStructure<String>();
+						responseStructure.setData("Forbidden");
+						responseStructure.setMessage("Something Went Wrong");
+						responseStructure.setStatusCode(HttpStatus.FORBIDDEN.value());
+						
+						return new ResponseEntity<ResponseStructure<String>>(responseStructure,HttpStatus.OK);
+					}
+				}
+				else {
+					throw new TrainerDeletionException();
+				}
+			}
+			else {
+				throw new UserNotAuthorizedException();
+			}
+		}
+		else {
+			throw new UserNotFoundException();
+		}
 	}
 }
