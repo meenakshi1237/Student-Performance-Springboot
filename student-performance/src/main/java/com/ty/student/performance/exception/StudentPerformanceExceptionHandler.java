@@ -36,6 +36,17 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler(VotingListEmptyException.class)
+	public ResponseEntity<ResponseStructure<String>> handleVotingListEmptyException(VotingListEmptyException exception){
+		ResponseStructure<String> structure=new ResponseStructure<String>();
+		
+		structure.setStatusCode(HttpStatus.NO_CONTENT.value());
+		structure.setMessage(exception.getMessage());
+		structure.setData("No Content");
+		
+		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.NO_CONTENT);
+	}
+	
 	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
 	public ResponseEntity<ResponseStructure<String>> handleUserAlreadyPresentException(SQLIntegrityConstraintViolationException exception){
 		ResponseStructure<String> structure=new ResponseStructure<String>();
@@ -49,12 +60,25 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 	
 	@ExceptionHandler(TrainerDeletionException.class)
 	public ResponseEntity<ResponseStructure<String>> handlerTrainerCannotBeDeleted(TrainerDeletionException exception){
-ResponseStructure<String> structure=new ResponseStructure<String>();
+		ResponseStructure<String> structure=new ResponseStructure<String>();
 		
 		structure.setStatusCode(HttpStatus.BAD_REQUEST.value());
 		structure.setMessage(""+exception.getMessage());
 		structure.setData("Not Found");
 		
 		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
+
+	}
+	
+	@ExceptionHandler(VotingAlreadyExistException.class)
+	public ResponseEntity<ResponseStructure<String>> handleVotingAlreadyExistException(VotingAlreadyExistException exception){
+		ResponseStructure<String> structure=new ResponseStructure<String>();
+		
+		structure.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		structure.setMessage(exception.getMessage());
+		structure.setData("Voting Already Exist");
+		
+		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
+
 	}
 }
