@@ -30,6 +30,8 @@ public class Presentation {
 	@SequenceGenerator(name = "pre_id_gen",initialValue = 201,allocationSize = 1)
 	private int presentationId;
 	private String topic;
+	private int trainerId;
+	private double trainerMark;
 	
 	@CreationTimestamp
 	private LocalDateTime presentedDateTime;
