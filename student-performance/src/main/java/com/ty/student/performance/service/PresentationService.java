@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import com.ty.student.performance.dao.PresentationDao;
 import com.ty.student.performance.dto.ResponseStructure;
@@ -17,6 +18,7 @@ import com.ty.student.performance.repository.PresentationRepository;
 import com.ty.student.performance.repository.UserRepository;
 import com.ty.student.performance.util.UserRole;
 
+@Service
 public class PresentationService {
 
 	@Autowired
