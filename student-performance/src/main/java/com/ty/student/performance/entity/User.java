@@ -41,7 +41,7 @@ public class User {
 	@OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
 	private Voting voting;
 	
-	@JsonIgnore
+
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private UserProfile userProfile;
 	
