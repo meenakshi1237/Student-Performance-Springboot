@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ty.student.performance.util.UserRole;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -27,6 +28,7 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int userId;
 	private String userName;
+	@Column(nullable = false,unique = true)
 	private String email;
 	private String password;
 	

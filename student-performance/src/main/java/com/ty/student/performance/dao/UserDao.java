@@ -15,6 +15,7 @@ public class UserDao {
 	@Autowired
 	private UserRepository userRepository;
 	
+<<<<<<< HEAD
 	public User findUser(int id) {
 		
 		Optional<User> optional= userRepository.findById(id);
@@ -30,4 +31,11 @@ public class UserDao {
 		
 		return userRepository.findByRole(role);
 	}
+=======
+	public User saveUser(User user) {
+		return userRepository.save(user);
+	}
+	
+	
+>>>>>>> fc0ddb9727a98d8bd3f26d14f3b5b5a45a60a910
 }
