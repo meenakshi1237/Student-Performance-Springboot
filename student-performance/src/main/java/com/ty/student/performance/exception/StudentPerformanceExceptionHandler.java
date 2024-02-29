@@ -1,5 +1,7 @@
 package com.ty.student.performance.exception;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -30,6 +32,17 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 		structure.setStatusCode(HttpStatus.BAD_REQUEST.value());
 		structure.setMessage(""+exception.getMessage());
 		structure.setData("Not found");
+		
+		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+	public ResponseEntity<ResponseStructure<String>> handleUserAlreadyPresentException(SQLIntegrityConstraintViolationException exception){
+		ResponseStructure<String> structure=new ResponseStructure<String>();
+		
+		structure.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		structure.setMessage(""+exception.getMessage());
+		structure.setData("User Already Exist");
 		
 		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
 	}
