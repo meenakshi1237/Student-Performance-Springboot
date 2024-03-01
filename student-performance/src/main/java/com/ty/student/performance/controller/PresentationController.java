@@ -33,12 +33,12 @@ public class PresentationController {
 		return presentationService.addTrainerMark(presentationId, trainerId, trainerMark);
 	}
 	
-	@GetMapping("/{studentId}")
+	@GetMapping("/student/{studentId}")
 	public ResponseEntity<ResponseStructure<List<Presentation>>> getPresentationByStudentId(@PathVariable int studentId) {
 		return presentationService.getPresentationByStudentId(studentId);
 	}
 	
-	@GetMapping("/{trainerId}")
+	@GetMapping("/trainer/{trainerId}")
 	public ResponseEntity<ResponseStructure<List<Presentation>>> getAllPresentation(@PathVariable int trainerId) {
 		return presentationService.getAllPresentation(trainerId);
 	}
