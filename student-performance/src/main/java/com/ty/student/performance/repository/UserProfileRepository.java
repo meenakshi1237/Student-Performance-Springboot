@@ -6,4 +6,6 @@ import com.ty.student.performance.entity.UserProfile;
 
 public interface UserProfileRepository extends JpaRepository<UserProfile, Integer> {
 
+	UserProfile findByUserUserId(int id);
+	
 }

@@ -157,8 +157,17 @@ public class UserProfileServiceImpl implements UserProfileService {
 			}
 
 			// Update other profile attributes as needed
+			
 
-			// Handle image update
+			// Handle image update and delete the existing image in the file
+			
+				String existing_path=existingProfile.getPath();
+			if(existing_path!=null) {
+				
+				Files.deleteIfExists(Paths.get(existing_path));
+			}
+			
+			
 			if (photofile != null && !photofile.isEmpty()) {
 				// File name
 				String name = photofile.getOriginalFilename();
@@ -195,6 +204,34 @@ public class UserProfileServiceImpl implements UserProfileService {
 			throw new UserNotFoundException();
 		}
 
+	}
+
+	//to find the userProfile by user id 
+	public ResponseEntity<ResponseStructure<UserProfile>> findUserProfile(int id) {
+		
+		User valid_user=userDao.findUserById(id);
+		
+		if(valid_user!=null) {
+			
+		UserProfile valid_userProfile=userProfileDao.findUserProfile(id);
+		
+		if(valid_userProfile!=null) {
+			
+			ResponseStructure<UserProfile> response = new ResponseStructure<>();
+			response.setData(valid_userProfile);
+			response.setMessage("User Profile Found");
+			response.setStatusCode(HttpStatus.OK.value());
+
+			return new ResponseEntity<ResponseStructure<UserProfile>>(response, HttpStatus.OK);
+			
+			
+		}else {
+			throw new UserProfileNotFundException();
+		}
+		
+		}else {
+			throw new UserNotFoundException();
+		}
 	}
 
 
