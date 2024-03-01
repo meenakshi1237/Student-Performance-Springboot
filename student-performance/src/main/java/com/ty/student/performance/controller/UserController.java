@@ -27,10 +27,13 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
+	//Api to save User As a Trainer
 	@PostMapping("/trainer")
 	public ResponseEntity<ResponseStructure<User>> saveTrainer(@RequestBody User user){
 		return userService.saveTrainer(user);
 	}
+	
+	//Api to save User As a Student
 	
 	@PostMapping("/student")
 	public ResponseEntity<ResponseStructure<User>> saveStudent(@RequestBody User user){
@@ -39,22 +42,25 @@ public class UserController {
 	
 	//to get the user details if user is a trainer
 		@GetMapping("/{id}/{role}")
-		public ResponseEntity<ResponseStructure<List<User>>> findAllUsers(@PathVariable int id,@PathVariable UserRole role){
-			
-			return userService.findAllUsers(id,role);
-			
-		}
-
+	public ResponseEntity<ResponseStructure<List<User>>> findAllUsers(@PathVariable int id,@PathVariable UserRole role){
+		
+		return userService.findAllUsers(id,role);
+		
+	}
+		
+	//Api to update User
 	@PutMapping("/user/{userId}/{trainerId}")
 	public ResponseEntity<ResponseStructure<User>> updateUser(@RequestBody User user,@PathVariable int trainerId,@PathVariable int userId){
 		return userService.updateUser(user, userId, trainerId);
 	}
 	
+	//Api to find User by id
 	@GetMapping("/user/{userId}")
 	public ResponseEntity<ResponseStructure<User>> findUserById(@PathVariable int userId){
 		return userService.findUserById(userId);
 	}
 	
+	//Api to delete user
 	@DeleteMapping("/student/{studentId}/{trainerId}")
 	public ResponseEntity<ResponseStructure<String>> deleteStudent(@PathVariable int studentId,@PathVariable int trainerId){
 		return userService.deleteStudent(studentId, trainerId);
