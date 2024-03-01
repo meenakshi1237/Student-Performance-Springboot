@@ -16,4 +16,6 @@ public class UserProfileDao {
 		
 		return userProfileRepository.save(profile);
 	}
+	
+
 }
