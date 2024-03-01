@@ -21,15 +21,15 @@ public class StudentPerformanceConfiguration {
 		localhost.setDescription("Development environment");
 
 		Contact contact = new Contact();
-		contact.setEmail("email@student.com");
-		contact.setName("Application Name");
-		contact.setUrl("https://domain name");
+		contact.setEmail("info@student.com");
+		contact.setName("Student Performance");
+		contact.setUrl("https://student.com");
 
 		License mitLicense = new License().name("MIT License").url("https://choosealicense.com/licenses/mit/");
 
-		Info info = new Info().title("ApplicationName RESTful Web Service documentation").version("1.0").contact(contact)
-				.description("This API exposes endpoints to manage Application.")
-				.termsOfService("https://domainname/terms").license(mitLicense);
+		Info info = new Info().title("Student Performance RESTful Web Service documentation").version("1.0").contact(contact)
+				.description("This API exposes endpoints to manage StudentPerformance.")
+				.termsOfService("https://student.com/terms").license(mitLicense);
 
 		return new OpenAPI().info(info).servers(List.of(localhost));
 	}
