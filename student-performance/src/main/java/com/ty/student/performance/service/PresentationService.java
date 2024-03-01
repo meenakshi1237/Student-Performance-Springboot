@@ -84,7 +84,7 @@ public class PresentationService {
 
 		if (user != null) {
 			if (user.getUserRole().equals(UserRole.valueOf("STUDENT"))) {
-				List<Presentation> presentationLists = presentationDao.getPresentationByStudentId(user);
+				List<Presentation> presentationLists = presentationDao.getPresentationByStudentId(studentId);
 
 				if (!presentationLists.isEmpty()) {
 					ResponseStructure<List<Presentation>> responseStructure = new ResponseStructure<List<Presentation>>();
