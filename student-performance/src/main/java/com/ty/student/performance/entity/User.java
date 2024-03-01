@@ -40,8 +40,8 @@ public class User {
 	private List<Presentation> presentations = new ArrayList<Presentation>();
 	
 	@JsonIgnore
-	@OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
-	private Voting voting;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+	private List<Voting> votings;
 	
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)

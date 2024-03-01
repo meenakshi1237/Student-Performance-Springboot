@@ -45,7 +45,7 @@ public class VotingService {
 					List<Voting> votings = this.votingDao.getAllVotingByPresentationId(presentationId);
 					boolean isPresent = false;
 					for (Voting voting2 : votings) {
-						if(userId == voting2.getUser().getUserId()) {
+						if(userId == voting2.getUser().getUserId() && presentationId == voting2.getPresentation().getPresentationId()) {
 							isPresent = true;
 							break;
 						}

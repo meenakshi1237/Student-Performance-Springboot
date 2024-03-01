@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,6 +39,7 @@ public class Presentation {
 	
 	@ManyToOne
 	@JoinColumn(name = "studentId")
+	@Schema(hidden = true)
 	private User user;
 	
 	@JsonIgnore
