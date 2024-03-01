@@ -1,5 +1,7 @@
 package com.ty.student.performance.exception;
 
+import java.io.IOException;
+
 import java.sql.SQLIntegrityConstraintViolationException;
 
 import org.springframework.http.HttpStatus;
@@ -35,6 +37,17 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 		
 		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
 	}
+
+	@ExceptionHandler(IOException.class)
+	public ResponseEntity<ResponseStructure<String>> handleIOException(IOException exception){
+		ResponseStructure<String> structure=new ResponseStructure<String>();
+		
+		structure.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		structure.setMessage(exception.getMessage());
+		structure.setData("Not successful");
+		
+		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
+	}
 	
 	@ExceptionHandler(VotingListEmptyException.class)
 	public ResponseEntity<ResponseStructure<String>> handleVotingListEmptyException(VotingListEmptyException exception){
@@ -46,7 +59,7 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 		
 		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.NO_CONTENT);
 	}
-	
+
 	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
 	public ResponseEntity<ResponseStructure<String>> handleUserAlreadyPresentException(SQLIntegrityConstraintViolationException exception){
 		ResponseStructure<String> structure=new ResponseStructure<String>();
@@ -58,6 +71,29 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler(UserProfileNotFundException.class)
+	public ResponseEntity<ResponseStructure<String>> handleUserProfileNotFundException(UserProfileNotFundException exception){
+		ResponseStructure<String> structure=new ResponseStructure<String>();
+		
+		structure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		structure.setMessage(exception.getMessage());
+		structure.setData("Deletion Not possible");
+		
+		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(PhotoNotFoundException.class)
+	public ResponseEntity<ResponseStructure<String>> handlePhotoNotFoundException(PhotoNotFoundException exception){
+		ResponseStructure<String> structure=new ResponseStructure<String>();
+		
+		structure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		structure.setMessage(exception.getMessage());
+		structure.setData("Deletion Not possible");
+		
+		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.NOT_FOUND);
+	}
+	
+
 	@ExceptionHandler(TrainerDeletionException.class)
 	public ResponseEntity<ResponseStructure<String>> handlerTrainerCannotBeDeleted(TrainerDeletionException exception){
 		ResponseStructure<String> structure=new ResponseStructure<String>();
