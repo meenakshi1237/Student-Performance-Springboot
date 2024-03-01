@@ -1,7 +1,6 @@
 package com.ty.student.performance.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,8 +14,6 @@ import com.ty.student.performance.entity.User;
 import com.ty.student.performance.exception.PresentationListEmptyException;
 import com.ty.student.performance.exception.UserNotAuthorizedException;
 import com.ty.student.performance.exception.UserNotFoundException;
-import com.ty.student.performance.repository.PresentationRepository;
-import com.ty.student.performance.repository.UserRepository;
 import com.ty.student.performance.util.UserRole;
 
 @Service
