@@ -16,6 +16,12 @@ public class UserProfileDao {
 		
 		return userProfileRepository.save(profile);
 	}
+
+	public UserProfile findUserProfile(int id) {
+		
+		return userProfileRepository.findByUserUserId(id);
+		
+	}
 	
 
 }

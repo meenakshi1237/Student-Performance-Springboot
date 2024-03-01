@@ -15,7 +15,7 @@ public class UserProfileNotFundException extends RuntimeException{
 	
 	@Override
 	public String getMessage() {
-		return "User Profile not found gor existing user";
+		return "User Profile not found for existing user";
 	}
 
 }
