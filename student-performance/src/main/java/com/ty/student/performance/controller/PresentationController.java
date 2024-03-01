@@ -39,7 +39,7 @@ public class PresentationController {
 	}
 	
 	@GetMapping("/trainer/{trainerId}")
-	public ResponseEntity<ResponseStructure<List<Presentation>>> getAllPresentation(@PathVariable int trainerId) {
-		return presentationService.getAllPresentation(trainerId);
+	public ResponseEntity<ResponseStructure<List<Presentation>>> getAllPresentationByTrainerId(@PathVariable int trainerId) {
+		return presentationService.getAllPresentationByTrainerId(trainerId);
 	}
 }

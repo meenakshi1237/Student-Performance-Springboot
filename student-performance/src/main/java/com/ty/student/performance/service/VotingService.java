@@ -35,7 +35,7 @@ public class VotingService {
 	
 	public ResponseEntity<ResponseStructure<Voting>> saveVoting(int userId ,int presentationId, Voting voting) {
 		
-		Presentation presentation = this.presentationDao.getPresetationById(presentationId);
+		Presentation presentation = this.presentationDao.getPresentationById(presentationId);
 		User user = this.userDao.findUserById(userId);
 		
 		if(presentation != null && user != null) {

@@ -37,7 +37,7 @@ public class Presentation {
 	private LocalDateTime presentedDateTime;
 	
 	@ManyToOne
-	@JoinColumn
+	@JoinColumn(name = "studentId")
 	private User user;
 	
 	@JsonIgnore
