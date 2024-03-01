@@ -77,9 +77,9 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 		
 		structure.setStatusCode(HttpStatus.NOT_FOUND.value());
 		structure.setMessage(exception.getMessage());
-		structure.setData("Deletion Not possible");
+		structure.setData(null);
 		
-		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(PhotoNotFoundException.class)

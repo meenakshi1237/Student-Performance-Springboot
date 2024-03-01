@@ -48,6 +48,13 @@ public class UserProfileController {
 
 		return userProfileService.updateUserProfile(id, userProfile, photofile);
 	}
+	
+	//to find the user profile user id
+	@GetMapping("/{id}/userprofile")
+	public ResponseEntity<ResponseStructure<UserProfile>> findUserProfile(@PathVariable int id) {
+
+		return userProfileService.findUserProfile(id);
+	}
 
 
 }
