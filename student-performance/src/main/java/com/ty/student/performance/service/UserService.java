@@ -19,6 +19,8 @@ public class UserService {
 	@Autowired
 	private UserDao userDao;
 	
+	//Service method to save User As a Trainer
+	
 	public ResponseEntity<ResponseStructure<User>> saveTrainer(User user){
 		user.setUserRole(UserRole.TRAINER);
 		User saveduser=userDao.saveUser(user);
@@ -29,6 +31,8 @@ public class UserService {
 		
 		return new ResponseEntity<ResponseStructure<User>>(responseStructure,HttpStatus.OK);
 	}
+	
+	//Service method to save User As a Student
 	
 	public ResponseEntity<ResponseStructure<User>> saveStudent(User user){
 		user.setUserRole(UserRole.STUDENT);
@@ -41,6 +45,7 @@ public class UserService {
 		return new ResponseEntity<ResponseStructure<User>>(responseStructure,HttpStatus.OK);
 	}
 	
+	//find User By id
 	public ResponseEntity<ResponseStructure<User>> findUserById(int userId){
 		User user=userDao.findUserById(userId);
 		if(user!=null) {
@@ -56,6 +61,7 @@ public class UserService {
 		}
 	}
 	
+	//Update User By Id
 	public ResponseEntity<ResponseStructure<User>> updateUser(User user,int userId,int trainerId){
 		User foundUser=userDao.findUserById(userId);
 		User trainer=userDao.findUserById(trainerId);
@@ -87,6 +93,8 @@ public class UserService {
 			throw new UserNotFoundException();
 		}
 	}
+	
+	//Delete user if he is only student
 	
 	public ResponseEntity<ResponseStructure<String>> deleteStudent(int studentId,int trainerId){
 		User trainer=userDao.findUserById(trainerId);
