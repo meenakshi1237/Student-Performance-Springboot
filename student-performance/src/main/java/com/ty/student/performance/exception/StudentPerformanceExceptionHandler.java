@@ -118,6 +118,17 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 
 	}
 	
+	@ExceptionHandler(VotingNotFoundException.class)
+	public ResponseEntity<ResponseStructure<String>> handleVotingNotFoundException(VotingNotFoundException exception){
+		ResponseStructure<String> structure=new ResponseStructure<String>();
+		
+		structure.setStatusCode(HttpStatus.NOT_FOUND.value());
+		structure.setMessage(exception.getMessage());
+		structure.setData("Not Found");
+		
+		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.NOT_FOUND);
+	}
+	
 	@ExceptionHandler(PresentationNotFoundException.class)
 	public ResponseEntity<ResponseStructure<String>> handlePresentationNotFoundException(PresentationNotFoundException exception){
 		ResponseStructure<String> structure=new ResponseStructure<String>();

@@ -1,5 +1,6 @@
 package com.ty.student.performance.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,12 +24,14 @@ public class Voting {
 	private String review;
 	private String suggestion;
 	
-	@OneToOne
+	@ManyToOne
 	@JoinColumn
+	@Schema(hidden = true)
 	private User user;
 	
 	@ManyToOne
 	@JoinColumn
+	@Schema(hidden = true)
 	private Presentation presentation;
 	
 }
