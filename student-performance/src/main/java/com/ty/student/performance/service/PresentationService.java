@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.ty.student.performance.dao.PresentationDao;
+import com.ty.student.performance.dao.UserDao;
 import com.ty.student.performance.dto.ResponseStructure;
 import com.ty.student.performance.entity.Presentation;
 import com.ty.student.performance.entity.User;
@@ -21,10 +22,13 @@ public class PresentationService {
 
 	@Autowired
 	private PresentationDao presentationDao;
+	
+	@Autowired
+	private UserDao userDao;
 
 	public ResponseEntity<ResponseStructure<Presentation>> savePresentation(Presentation presentation, int studentId) {
 
-		User user = presentationDao.findUserById(studentId);
+		User user =userDao.findUserById(studentId);
 
 		if (user != null) {
 			if (user.getUserRole().equals(UserRole.valueOf("STUDENT"))) {
@@ -53,7 +57,7 @@ public class PresentationService {
 			double trainerMark) {
 
 		Presentation presentation = presentationDao.getPresentationById(presentationId);
-		User user = presentationDao.findUserById(trainerId);
+		User user = userDao.findUserById(trainerId);
 
 		if (user != null) {
 			if (user.getUserRole().equals(UserRole.valueOf("TRAINER"))) {
@@ -77,11 +81,11 @@ public class PresentationService {
 	}
 
 	public ResponseEntity<ResponseStructure<List<Presentation>>> getPresentationByStudentId(int studentId) {
-		User user = presentationDao.findUserById(studentId);
+		User user = userDao.findUserById(studentId);
 
 		if (user != null) {
 			if (user.getUserRole().equals(UserRole.valueOf("STUDENT"))) {
-				List<Presentation> presentationLists = presentationDao.getPresentationByStudentId(user);
+				List<Presentation> presentationLists = presentationDao.getPresentationByStudentId(studentId);
 
 				if (!presentationLists.isEmpty()) {
 					ResponseStructure<List<Presentation>> responseStructure = new ResponseStructure<List<Presentation>>();
@@ -104,7 +108,7 @@ public class PresentationService {
 	}
 
 	public ResponseEntity<ResponseStructure<List<Presentation>>> getAllPresentationByTrainerId(int trainerId) {
-		User user = presentationDao.findUserById(trainerId);
+		User user = userDao.findUserById(trainerId);
 
 		if (user != null) {
 			if (user.getUserRole().equals(UserRole.valueOf("TRAINER"))) {

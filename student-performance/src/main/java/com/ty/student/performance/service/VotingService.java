@@ -14,6 +14,7 @@ import com.ty.student.performance.dto.ResponseStructure;
 import com.ty.student.performance.entity.Presentation;
 import com.ty.student.performance.entity.User;
 import com.ty.student.performance.entity.Voting;
+import com.ty.student.performance.exception.PresentationNotFoundException;
 import com.ty.student.performance.exception.UserNotAuthorizedException;
 import com.ty.student.performance.exception.UserNotFoundException;
 import com.ty.student.performance.exception.VotingAlreadyExistException;
@@ -38,32 +39,37 @@ public class VotingService {
 		Presentation presentation = this.presentationDao.getPresentationById(presentationId);
 		User user = this.userDao.findUserById(userId);
 		
-		if(presentation != null && user != null) {
-			if(user.getUserRole().equals(UserRole.STUDENT) && userId != presentation.getUser().getUserId()) {
-				List<Voting> votings = this.votingDao.getAllVotingByPresentationId(presentationId);
-				boolean isPresent = false;
-				for (Voting voting2 : votings) {
-					if(userId == voting2.getUser().getUserId()) {
-						isPresent = true;
-						break;
+		if(user != null) {
+			if(presentation != null) {
+				if(user.getUserRole().equals(UserRole.STUDENT) && userId != presentation.getUser().getUserId()) {
+					List<Voting> votings = this.votingDao.getAllVotingByPresentationId(presentationId);
+					boolean isPresent = false;
+					for (Voting voting2 : votings) {
+						if(userId == voting2.getUser().getUserId() && presentationId == voting2.getPresentation().getPresentationId()) {
+							isPresent = true;
+							break;
+						}
 					}
-				}
-				if(!isPresent) {
-					voting.setUser(user);
-					voting.setPresentation(presentation);
-					this.votingDao.saveVoting(voting);
-					ResponseStructure<Voting> responseStructure = new ResponseStructure<Voting>();
-					responseStructure.setStatusCode(HttpStatus.CREATED.value());
-					responseStructure.setMessage("Success");
-					responseStructure.setData(voting);
-					
-					return new ResponseEntity<ResponseStructure<Voting>>(responseStructure, HttpStatus.CREATED);
+					if(!isPresent) {
+						voting.setUser(user);
+						voting.setPresentation(presentation);
+						this.votingDao.saveVoting(voting);
+						ResponseStructure<Voting> responseStructure = new ResponseStructure<Voting>();
+						responseStructure.setStatusCode(HttpStatus.CREATED.value());
+						responseStructure.setMessage("Success");
+						responseStructure.setData(voting);
+						
+						return new ResponseEntity<ResponseStructure<Voting>>(responseStructure, HttpStatus.CREATED);
+					} else {
+						throw new VotingAlreadyExistException();
+					}
 				} else {
-					throw new VotingAlreadyExistException();
+					throw new UserNotAuthorizedException();
 				}
 			} else {
-				throw new UserNotAuthorizedException();
+				throw new PresentationNotFoundException();
 			}
+			
 		} else {
 			throw new UserNotFoundException();
 		}

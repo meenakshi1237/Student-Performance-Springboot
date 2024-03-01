@@ -15,9 +15,6 @@ import com.ty.student.performance.repository.UserRepository;
 public class PresentationDao {
 
 	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
 	private PresentationRepository presentationRepository;
 
 	public Presentation savePresentation(Presentation presentation) {
@@ -29,8 +26,8 @@ public class PresentationDao {
 		return presentationRepository.save(presentation);
 	}
 
-	public List<Presentation> getPresentationByStudentId(User user) {
-		return user.getPresentations();
+	public List<Presentation> getPresentationByStudentId(int studentId) {
+		return presentationRepository.findByUserUserId(studentId);
 	}
 
 	public List<Presentation> getAllPresentation() {
@@ -45,14 +42,9 @@ public class PresentationDao {
 			return null;
 		}
 	}
-
-	public User findUserById(int studentId) {
-		Optional<User> opt = userRepository.findById(studentId);
-		return opt.get();
-	}
 	
 	public List<Presentation> getAllPresentationByTrainerId(int trainerId) {
-		return presentationRepository.findByUserUserId(trainerId);
+		return presentationRepository.findByTrainerId(trainerId);
 	}
 
 }
