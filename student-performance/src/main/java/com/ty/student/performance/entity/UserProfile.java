@@ -1,5 +1,7 @@
 package com.ty.student.performance.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +24,7 @@ public class UserProfile {
 	
 	private String path;
 	
+	@JsonIgnore
 	@OneToOne
 	@JoinColumn
 	private User user;
