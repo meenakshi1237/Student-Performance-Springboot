@@ -1,6 +1,8 @@
 package com.ty.student.performance.dao;
 
+
 import java.util.List;
+
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +19,6 @@ public class UserDao {
 	private UserRepository userRepository;
 	
 
-	public User findUser(int id) {
-		
-		Optional<User> optional= userRepository.findById(id);
-		
-		if(optional.isPresent()) {
-			return optional.get();
-		}else {
-			return null;
-		}
-	}
-
 	public List<User> findUserByRole(UserRole role) {
 		
 		return userRepository.findByUserRole(role);
@@ -36,6 +27,28 @@ public class UserDao {
 	public User saveUser(User user) {
 		return userRepository.save(user);
 	}
+	
+
+	public User findUserById(int userId) {
+		Optional<User> optional= userRepository.findById(userId);
+		if(optional.isPresent()) {
+			return optional.get();
+		}
+		else {
+			return null;
+		}
+	}
+	
+	public boolean deleteStudent(User user) {
+		if(user!=null) {
+			userRepository.delete(user);
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 	
 
 }

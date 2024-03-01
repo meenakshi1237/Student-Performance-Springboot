@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ty.student.performance.dao.UserDao;
 import com.ty.student.performance.dao.UserProfileDao;
 import com.ty.student.performance.dto.ResponseStructure;
 import com.ty.student.performance.entity.User;
@@ -20,7 +21,6 @@ import com.ty.student.performance.entity.UserProfile;
 import com.ty.student.performance.exception.PhotoNotFoundException;
 import com.ty.student.performance.exception.UserNotFoundException;
 import com.ty.student.performance.exception.UserProfileNotFundException;
-import com.ty.student.performance.repository.UserRepository;
 import com.ty.student.performance.util.UserProfileService;
 
 @Service
@@ -33,103 +33,111 @@ public class UserProfileServiceImpl implements UserProfileService {
 	private UserProfileDao userProfileDao;
 
 	@Autowired
-	private UserRepository userRepository;
+	private UserDao userDao;
 
 	@Override
 	public ResponseEntity<ResponseStructure<UserProfile>> saveUserProfile(int id, UserProfile profile,
 			MultipartFile file) throws IOException {
 
 		// finding the user by id
-		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+		User user = userDao.findUserById(id);
 
-		// setting the profile to ths user
-		profile.setUser(user);
+		if (user != null) {
+			// setting the profile to ths user
+			profile.setUser(user);
 
-		// File name
-		String name = file.getOriginalFilename();
+			// File name
+			String name = file.getOriginalFilename();
 
-		// generate random Id for each photo
+			// generate random Id for each photo
 
-		String randomId = UUID.randomUUID().toString();
-		String fileName1 = randomId.concat(name.substring(name.lastIndexOf(".")));
+			String randomId = UUID.randomUUID().toString();
+			String fileName1 = randomId.concat(name.substring(name.lastIndexOf(".")));
 
-		// Fullpath
-		String filePath = path + File.separator + fileName1;
+			// Fullpath
+			String filePath = path + File.separator + fileName1;
 
-		// create folder if not created
-		File f = new File(path);
-		if (!f.exists()) {
-			f.mkdir();
+			// create folder if not created
+			File f = new File(path);
+			if (!f.exists()) {
+				f.mkdir();
+			}
+
+			// file copy
+			Files.copy(file.getInputStream(), Paths.get(filePath));
+
+			profile.setPath(filePath);
+
+			UserProfile saved_userProfile = userProfileDao.saveUserProfile(profile);
+
+			ResponseStructure<UserProfile> response = new ResponseStructure<UserProfile>();
+
+			response.setData(saved_userProfile);
+			response.setMessage("User profile created for the user");
+			response.setStatusCode(HttpStatus.CREATED.value());
+
+			return new ResponseEntity<ResponseStructure<UserProfile>>(response, HttpStatus.CREATED);
+		} else {
+			throw new UserNotFoundException();
 		}
-
-		// file copy
-		Files.copy(file.getInputStream(), Paths.get(filePath));
-
-		profile.setPath(filePath);
-
-		UserProfile saved_userProfile = userProfileDao.saveUserProfile(profile);
-
-		ResponseStructure<UserProfile> response = new ResponseStructure<UserProfile>();
-
-		response.setData(saved_userProfile);
-		response.setMessage("User profile created for the user");
-		response.setStatusCode(HttpStatus.CREATED.value());
-
-		return new ResponseEntity<ResponseStructure<UserProfile>>(response, HttpStatus.CREATED);
 
 	}
 
 	public ResponseEntity<ResponseStructure<UserProfile>> deleteUserProfile(int user_id) {
 
 		// finding the user by id
-		User user = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException());
+		User user = userDao.findUserById(user_id);
 
-		// get the path of image for the existing userprofile
+		if (user != null) {
+			// get the path of image for the existing userprofile
 
-		UserProfile valid_userProfile = user.getUserProfile();
+			UserProfile valid_userProfile = user.getUserProfile();
 
-		if (valid_userProfile != null) {
+			if (valid_userProfile != null) {
 
-			String filePath = valid_userProfile.getPath();
+				String filePath = valid_userProfile.getPath();
 
-			if (filePath != null) {
+				if (filePath != null) {
 
-				try {
-					// to delete the image in images file
-					Files.deleteIfExists(Paths.get(filePath));
+					try {
+						// to delete the image in images file
+						Files.deleteIfExists(Paths.get(filePath));
 
-					// setting the path attribute to null in database
-					valid_userProfile.setPath(null);
+						// setting the path attribute to null in database
+						valid_userProfile.setPath(null);
 
-					// updating the userProfile in the database
-					userProfileDao.saveUserProfile(valid_userProfile);
+						// updating the userProfile in the database
+						userProfileDao.saveUserProfile(valid_userProfile);
 
-					ResponseStructure<UserProfile> response = new ResponseStructure<UserProfile>();
-					response.setData(valid_userProfile);
-					response.setMessage("Image Deleted Sucessfully");
-					response.setStatusCode(HttpStatus.OK.value());
+						ResponseStructure<UserProfile> response = new ResponseStructure<UserProfile>();
+						response.setData(valid_userProfile);
+						response.setMessage("Image Deleted Sucessfully");
+						response.setStatusCode(HttpStatus.OK.value());
 
-					return new ResponseEntity<ResponseStructure<UserProfile>>(response, HttpStatus.OK);
+						return new ResponseEntity<ResponseStructure<UserProfile>>(response, HttpStatus.OK);
 
-				} catch (IOException e) {
+					} catch (IOException e) {
 
-					e.printStackTrace();
+						e.printStackTrace();
 
-					ResponseStructure<UserProfile> response = new ResponseStructure<UserProfile>();
-					response.setData(null);
-					response.setMessage("Error in Deleting image");
-					response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+						ResponseStructure<UserProfile> response = new ResponseStructure<UserProfile>();
+						response.setData(null);
+						response.setMessage("Error in Deleting image");
+						response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
-					return new ResponseEntity<ResponseStructure<UserProfile>>(response,
-							HttpStatus.INTERNAL_SERVER_ERROR);
+						return new ResponseEntity<ResponseStructure<UserProfile>>(response,
+								HttpStatus.INTERNAL_SERVER_ERROR);
 
+					}
+				} else {
+					throw new PhotoNotFoundException();
 				}
-			} else {
-				throw new PhotoNotFoundException();
-			}
 
+			} else {
+				throw new UserProfileNotFundException("User Profile Does not exist for" + user.getUserName());
+			}
 		} else {
-			throw new UserProfileNotFundException("User Profile Does not exist for" + user.getUserName());
+			throw new UserNotFoundException();
 		}
 
 	}
@@ -138,49 +146,54 @@ public class UserProfileServiceImpl implements UserProfileService {
 			MultipartFile photofile) throws IOException {
 
 		// Finding the user by id
-		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+		User user = userDao.findUserById(id);
 
-		// Check if the user already has a profile
-		UserProfile existingProfile = user.getUserProfile();
-		if (existingProfile == null) {
-			// If the user doesn't have a profile, create a new one
-			return saveUserProfile(id, userProfile, photofile);
-		}
+		if (user != null) {
+			// Check if the user already has a profile
+			UserProfile existingProfile = user.getUserProfile();
+			if (existingProfile == null) {
+				// If the user doesn't have a profile, create a new one
+				return saveUserProfile(id, userProfile, photofile);
+			}
 
-		// Update other profile attributes as needed
+			// Update other profile attributes as needed
 
-		// Handle image update
-		if (photofile != null && !photofile.isEmpty()) {
-			// File name
-			String name = photofile.getOriginalFilename();
-			// generate random Id for each photo
-			String randomId = UUID.randomUUID().toString();
-			String fileName1 = randomId.concat(name.substring(name.lastIndexOf(".")));
-			// Fullpath
-			String filePath = path + File.separator + fileName1;
-			// file copy
-			Files.copy(photofile.getInputStream(), Paths.get(filePath));
-			existingProfile.setPath(filePath);
+			// Handle image update
+			if (photofile != null && !photofile.isEmpty()) {
+				// File name
+				String name = photofile.getOriginalFilename();
+				// generate random Id for each photo
+				String randomId = UUID.randomUUID().toString();
+				String fileName1 = randomId.concat(name.substring(name.lastIndexOf(".")));
+				// Fullpath
+				String filePath = path + File.separator + fileName1;
+				// file copy
+				Files.copy(photofile.getInputStream(), Paths.get(filePath));
+				existingProfile.setPath(filePath);
 
-		} else {
+			} else {
+
+				ResponseStructure<UserProfile> response = new ResponseStructure<>();
+				response.setData(null);
+				response.setMessage("Image Not Updated Successfully");
+				response.setStatusCode(HttpStatus.FORBIDDEN.value());
+
+				return new ResponseEntity<ResponseStructure<UserProfile>>(response, HttpStatus.FORBIDDEN);
+
+			}
+
+			UserProfile updatedUserProfile = userProfileDao.saveUserProfile(existingProfile);
 
 			ResponseStructure<UserProfile> response = new ResponseStructure<>();
-			response.setData(null);
-			response.setMessage("Image Not Updated Successfully");
-			response.setStatusCode(HttpStatus.FORBIDDEN.value());
+			response.setData(updatedUserProfile);
+			response.setMessage("User profile updated successfully");
+			response.setStatusCode(HttpStatus.OK.value());
 
-			return new ResponseEntity<ResponseStructure<UserProfile>>(response, HttpStatus.FORBIDDEN);
+			return new ResponseEntity<ResponseStructure<UserProfile>>(response, HttpStatus.OK);
 
+		} else {
+			throw new UserNotFoundException();
 		}
-
-		UserProfile updatedUserProfile = userProfileDao.saveUserProfile(existingProfile);
-
-		ResponseStructure<UserProfile> response = new ResponseStructure<>();
-		response.setData(updatedUserProfile);
-		response.setMessage("User profile updated successfully");
-		response.setStatusCode(HttpStatus.OK.value());
-
-		return new ResponseEntity<ResponseStructure<UserProfile>>(response, HttpStatus.OK);
 
 	}
 }
