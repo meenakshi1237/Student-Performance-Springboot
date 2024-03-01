@@ -29,8 +29,8 @@ public class PresentationDao {
 		return presentationRepository.save(presentation);
 	}
 
-	public List<Presentation> getPresentationByStudentId(User user) {
-		return user.getPresentations();
+	public List<Presentation> getPresentationByStudentId(int studentId) {
+		return presentationRepository.findByUserUserId(studentId);
 	}
 
 	public List<Presentation> getAllPresentation() {
@@ -52,7 +52,7 @@ public class PresentationDao {
 	}
 	
 	public List<Presentation> getAllPresentationByTrainerId(int trainerId) {
-		return presentationRepository.findByUserUserId(trainerId);
+		return presentationRepository.findByTrainerId(trainerId);
 	}
 
 }
