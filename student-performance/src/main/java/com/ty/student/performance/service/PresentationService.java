@@ -1,6 +1,6 @@
 package com.ty.student.performance.service;
 
-import java.util.List; 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import com.ty.student.performance.dao.PresentationDao;
 import com.ty.student.performance.dto.ResponseStructure;
 import com.ty.student.performance.entity.Presentation;
 import com.ty.student.performance.entity.User;
+import com.ty.student.performance.exception.PresentationListEmptyException;
 import com.ty.student.performance.exception.UserNotAuthorizedException;
 import com.ty.student.performance.exception.UserNotFoundException;
 import com.ty.student.performance.repository.PresentationRepository;
@@ -22,20 +23,15 @@ import com.ty.student.performance.util.UserRole;
 public class PresentationService {
 
 	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private PresentationRepository presentationRepository;
-
-	@Autowired
 	private PresentationDao presentationDao;
 
 	public ResponseEntity<ResponseStructure<Presentation>> savePresentation(Presentation presentation, int studentId) {
-		Optional<User> opt = userRepository.findById(studentId);
 
-		if (opt.isPresent()) {
-			if (opt.get().getUserRole().equals(UserRole.valueOf("STUDENT"))) {
-				presentation.setUser(opt.get());
+		User user = presentationDao.findUserById(studentId);
+
+		if (user != null) {
+			if (user.getUserRole().equals(UserRole.valueOf("STUDENT"))) {
+				presentation.setUser(user);
 
 				presentation.setTrainerId(0);
 				presentation.setTrainerMark(0.0);
@@ -58,15 +54,16 @@ public class PresentationService {
 
 	public ResponseEntity<ResponseStructure<Presentation>> addTrainerMark(int presentationId, int trainerId,
 			double trainerMark) {
-		Optional<Presentation> optPresentation = presentationRepository.findById(presentationId);
-		Optional<User> optUser = userRepository.findById(trainerId);
 
-		if (optUser.isPresent()) {
-			if (optUser.get().getUserRole().equals(UserRole.valueOf("TRAINER"))) {
-				optPresentation.get().setTrainerId(trainerId);
-				optPresentation.get().setTrainerMark(trainerMark);
+		Presentation presentation = presentationDao.getPresentationById(presentationId);
+		User user = presentationDao.findUserById(trainerId);
 
-				Presentation updatedPresentation = presentationDao.addTrainerMark(optPresentation.get());
+		if (user != null) {
+			if (user.getUserRole().equals(UserRole.valueOf("TRAINER"))) {
+				presentation.setTrainerId(trainerId);
+				presentation.setTrainerMark(trainerMark);
+
+				Presentation updatedPresentation = presentationDao.addTrainerMark(presentation);
 
 				ResponseStructure<Presentation> responseStructure = new ResponseStructure<Presentation>();
 				responseStructure.setStatusCode(HttpStatus.OK.value());
@@ -83,18 +80,23 @@ public class PresentationService {
 	}
 
 	public ResponseEntity<ResponseStructure<List<Presentation>>> getPresentationByStudentId(int studentId) {
-		Optional<User> optUser = userRepository.findById(studentId);
+		User user = presentationDao.findUserById(studentId);
 
-		if (optUser.isPresent()) {
-			if (optUser.get().getUserRole().equals(UserRole.valueOf("STUDENT"))) {
-				List<Presentation> presentationLists = presentationDao.getPresentationByStudentId(optUser.get());
+		if (user != null) {
+			if (user.getUserRole().equals(UserRole.valueOf("STUDENT"))) {
+				List<Presentation> presentationLists = presentationDao.getPresentationByStudentId(user);
 
-				ResponseStructure<List<Presentation>> responseStructure = new ResponseStructure<List<Presentation>>();
-				responseStructure.setStatusCode(HttpStatus.OK.value());
-				responseStructure.setData(presentationLists);
-				responseStructure.setMessage("Presentation list fetched");
+				if (!presentationLists.isEmpty()) {
+					ResponseStructure<List<Presentation>> responseStructure = new ResponseStructure<List<Presentation>>();
+					responseStructure.setStatusCode(HttpStatus.OK.value());
+					responseStructure.setData(presentationLists);
+					responseStructure.setMessage("Presentation list fetched");
 
-				return new ResponseEntity<ResponseStructure<List<Presentation>>>(responseStructure, HttpStatus.OK);
+					return new ResponseEntity<ResponseStructure<List<Presentation>>>(responseStructure, HttpStatus.OK);
+				} else {
+					throw new PresentationListEmptyException();
+				}
+
 			} else {
 				throw new UserNotAuthorizedException();
 			}
@@ -104,19 +106,24 @@ public class PresentationService {
 
 	}
 
-	public ResponseEntity<ResponseStructure<List<Presentation>>> getAllPresentation(int trainerId) {
-		Optional<User> optUser = userRepository.findById(trainerId);
+	public ResponseEntity<ResponseStructure<List<Presentation>>> getAllPresentationByTrainerId(int trainerId) {
+		User user = presentationDao.findUserById(trainerId);
 
-		if (optUser.isPresent()) {
-			if (optUser.get().getUserRole().equals(UserRole.valueOf("TRAINER"))) {
-				List<Presentation> presentationLists = presentationDao.getAllPresentation();
-				
-				ResponseStructure<List<Presentation>> responseStructure = new ResponseStructure<List<Presentation>>();
-				responseStructure.setStatusCode(HttpStatus.OK.value());
-				responseStructure.setData(presentationLists);
-				responseStructure.setMessage("Presentation list fetched");
+		if (user != null) {
+			if (user.getUserRole().equals(UserRole.valueOf("TRAINER"))) {
+				List<Presentation> presentationLists = presentationDao.getAllPresentationByTrainerId(trainerId);
 
-				return new ResponseEntity<ResponseStructure<List<Presentation>>>(responseStructure, HttpStatus.OK);
+				if (!presentationLists.isEmpty()) {
+					ResponseStructure<List<Presentation>> responseStructure = new ResponseStructure<List<Presentation>>();
+					responseStructure.setStatusCode(HttpStatus.OK.value());
+					responseStructure.setData(presentationLists);
+					responseStructure.setMessage("Presentation list fetched");
+
+					return new ResponseEntity<ResponseStructure<List<Presentation>>>(responseStructure, HttpStatus.OK);
+				} else {
+					throw new PresentationListEmptyException();
+				}
+
 			} else {
 				throw new UserNotAuthorizedException();
 			}
