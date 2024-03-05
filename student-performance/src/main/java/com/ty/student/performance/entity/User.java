@@ -16,6 +16,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,11 +30,13 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int userId;
+	@Size(min = 4,message = "Name must be more than 3 characters")
 	private String userName;
 	@Column(nullable = false,unique = true)
+	@Email(message = "invalid Email format")
 	private String email;
+	@Size(min = 8,max = 16)
 	private String password;
-	
 	@Enumerated(EnumType.STRING)
 	private UserRole userRole;
 	
