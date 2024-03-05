@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ty.student.performance.util.UserRole;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,6 +16,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,10 +30,13 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int userId;
+	@Size(min = 4,message = "Name must be more than 3 characters")
 	private String userName;
+	@Column(nullable = false,unique = true)
+	@Email(message = "invalid Email format")
 	private String email;
+	@Size(min = 8,max = 16)
 	private String password;
-	
 	@Enumerated(EnumType.STRING)
 	private UserRole userRole;
 	
@@ -38,10 +45,10 @@ public class User {
 	private List<Presentation> presentations = new ArrayList<Presentation>();
 	
 	@JsonIgnore
-	@OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
-	private Voting voting;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+	private List<Voting> votings;
 	
-	@JsonIgnore
+
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private UserProfile userProfile;
 	

@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,12 +31,15 @@ public class Presentation {
 	@SequenceGenerator(name = "pre_id_gen",initialValue = 201,allocationSize = 1)
 	private int presentationId;
 	private String topic;
+	private int trainerId;
+	private double trainerMark;
 	
 	@CreationTimestamp
 	private LocalDateTime presentedDateTime;
 	
 	@ManyToOne
-	@JoinColumn
+	@JoinColumn(name = "studentId")
+	@Schema(hidden = true)
 	private User user;
 	
 	@JsonIgnore
