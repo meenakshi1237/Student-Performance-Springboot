@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import com.ty.student.performance.dao.UserDao;
 import com.ty.student.performance.dto.ResponseStructure;
@@ -15,6 +17,7 @@ import com.ty.student.performance.exception.TrainerDeletionException;
 
 import com.ty.student.performance.exception.UserNotAuthorizedException;
 import com.ty.student.performance.exception.UserNotFoundException;
+import com.ty.student.performance.exception.ValidationException;
 import com.ty.student.performance.util.UserRole;
 
 @Service
@@ -23,8 +26,17 @@ public class UserService {
 	@Autowired
 	private UserDao userDao;
 	
+	
+	
 	//Service method to save User As a Trainer
-	public ResponseEntity<ResponseStructure<User>> saveTrainer(User user){
+	public ResponseEntity<ResponseStructure<User>> saveTrainer(User user,BindingResult bindingResult){
+		if(bindingResult.hasErrors()) {
+			String message="";
+			for(FieldError error:bindingResult.getFieldErrors()) {
+				message=message+error.getDefaultMessage()+", ";
+			}
+			throw new ValidationException(message);
+		}
 		user.setUserRole(UserRole.TRAINER);
 		User saveduser = userDao.saveUser(user);
 		ResponseStructure<User> responseStructure = new ResponseStructure<User>();
@@ -36,8 +48,15 @@ public class UserService {
 	}
 	
 	//Service method to save User As a Student
-	public ResponseEntity<ResponseStructure<User>> saveStudent(User user){
-
+	public ResponseEntity<ResponseStructure<User>> saveStudent(User user,BindingResult bindingResult){
+		if(bindingResult.hasErrors()) {
+			String message="";
+			for(FieldError error:bindingResult.getFieldErrors()) {
+				message=message+error.getDefaultMessage()+", ";
+			}
+			throw new ValidationException(message);
+		}
+		
 		user.setUserRole(UserRole.STUDENT);
 		User saveduser = userDao.saveUser(user);
 		ResponseStructure<User> responseStructure = new ResponseStructure<User>();
