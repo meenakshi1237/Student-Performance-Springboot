@@ -5,10 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ty.student.performance.dto.ResponseStructure;
 import com.ty.student.performance.entity.User;
+import com.ty.student.performance.exception.ValidationException;
 import com.ty.student.performance.service.UserService;
 import com.ty.student.performance.util.UserRole;
 
@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -40,16 +41,18 @@ public class UserController {
 	@Operation(description = "To Create Trainer", summary = "trainer will created")
 	@ApiResponses(value = {@ApiResponse(responseCode = "201",description = "Trainer Created")})
 	@PostMapping(value="/trainer",consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
-	public ResponseEntity<ResponseStructure<User>> saveTrainer(@RequestBody User user){
-		return userService.saveTrainer(user);
+	public ResponseEntity<ResponseStructure<User>> saveTrainer(@Valid @RequestBody User user,BindingResult bindingResult){
+		
+		return userService.saveTrainer(user,bindingResult);
 	}
 	
 	//Api to save User As a Student
 	@Operation(description = "To Create Student", summary = "student will be created")
 	@ApiResponses(value = {@ApiResponse(responseCode = "201",description = "Student Created")})
 	@PostMapping(value = "/student",consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
-	public ResponseEntity<ResponseStructure<User>> saveStudent(@RequestBody User user){
-		return userService.saveStudent(user);
+	public ResponseEntity<ResponseStructure<User>> saveStudent(@Valid @RequestBody User user,BindingResult result,BindingResult bindingResult){
+		
+		return userService.saveStudent(user,bindingResult);
 	}
 	
 	//to get the user details if user is a trainer
