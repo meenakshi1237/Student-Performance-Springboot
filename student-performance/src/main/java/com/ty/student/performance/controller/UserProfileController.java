@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,9 +38,9 @@ public class UserProfileController {
 	// to set user profile to the existing user
 	@Operation(description = "To Create User Profile", summary = "user profile will be created")
 	@ApiResponses(value = {@ApiResponse(responseCode = "201",description = "Trainer Created"),@ApiResponse(responseCode = "404",description = "`NOT FOUND`", content = @Content)})
-	@PostMapping(value = "/{id}/userprofile",consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
-	public ResponseEntity<ResponseStructure<UserProfile>> saveUserProfile(@PathVariable int id, UserProfile userProfile,
-			@RequestParam("image") MultipartFile photofile) throws IOException {
+	@PostMapping(value = "/{id}/userprofile",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE,MediaType.MULTIPART_FORM_DATA_VALUE})
+	public ResponseEntity<ResponseStructure<UserProfile>> saveUserProfile(@PathVariable int id,
+			@RequestParam("image") MultipartFile photofile, @ModelAttribute UserProfile userProfile) throws IOException {
 
 		return userProfileService.saveUserProfile(id, userProfile, photofile);
 	}
