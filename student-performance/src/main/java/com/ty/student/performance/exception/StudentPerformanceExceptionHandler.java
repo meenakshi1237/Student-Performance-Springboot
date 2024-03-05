@@ -12,6 +12,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.ty.student.performance.dto.ResponseStructure;
 
+import jakarta.validation.ConstraintViolationException;
+
 
 @ControllerAdvice
 public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionHandler{
@@ -149,5 +151,16 @@ public class StudentPerformanceExceptionHandler extends ResponseEntityExceptionH
 		structure.setData("No Content");
 		
 		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.NO_CONTENT);
+	}
+	
+	@ExceptionHandler(ValidationException.class)
+	public ResponseEntity<ResponseStructure<String>> handleConstraintViolationException(ValidationException exception){
+		ResponseStructure<String> structure=new ResponseStructure<String>();
+		
+		structure.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		structure.setMessage(exception.getMessage());
+		structure.setData("Bad Request");
+		
+		return new ResponseEntity<ResponseStructure<String>>(structure,HttpStatus.BAD_REQUEST);
 	}
 }
